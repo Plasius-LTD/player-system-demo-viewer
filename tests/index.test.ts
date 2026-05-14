@@ -1,4 +1,5 @@
 import {
+  PLAYER_SYSTEM_PACKAGES_FEATURE_FLAG_ID,
   PLAYER_SYSTEM_DEMO_VIEWER_FEATURE_FLAG_ID,
   createPlayerSystemDemoManifest,
   packageDescriptor,
@@ -7,7 +8,12 @@ import {
 describe("@plasius/player-system-demo-viewer", () => {
   it("exports the package descriptor", () => {
     expect(packageDescriptor.packageName).toBe("@plasius/player-system-demo-viewer");
-    expect(packageDescriptor.featureFlagId).toBe(PLAYER_SYSTEM_DEMO_VIEWER_FEATURE_FLAG_ID);
+    expect(packageDescriptor.featureFlagId).toBe(
+      PLAYER_SYSTEM_PACKAGES_FEATURE_FLAG_ID
+    );
+    expect(PLAYER_SYSTEM_DEMO_VIEWER_FEATURE_FLAG_ID).toBe(
+      PLAYER_SYSTEM_PACKAGES_FEATURE_FLAG_ID
+    );
   });
 
   it("creates a demo manifest", () => {
