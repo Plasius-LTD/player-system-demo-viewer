@@ -12,8 +12,15 @@ The Player System package family needs a static validation launcher and scenario
 
 `@plasius/player-system-demo-viewer` will own demo-scenario manifest contracts and the validation-launcher package boundary.
 
+The package inherits the Player System package-family parent feature flag
+`isekai.player-system.packages.enabled`. No capability is required at bootstrap
+time because the repository defines reusable validation surfaces instead of
+end-user entitlement or discoverability.
+
 ## Consequences
 
 - Demo validation can evolve without coupling to a full game runtime.
 - Scenario coverage can be tracked as package-owned artifacts.
 - Host apps are not forced to embed demo concerns.
+- Rollback for early adoption remains centralized: disable
+  `isekai.player-system.packages.enabled`.
