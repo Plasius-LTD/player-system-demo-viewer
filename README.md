@@ -26,6 +26,8 @@ npm install @plasius/player-system-demo-viewer
 - combat-safe reduction demos
 - institution-routing demos
 - points-ledger demos
+- launch, transition, and steady-state validation budgets for demo runs
+- degraded-path expectations for runtime failures surfaced through demos
 
 ## Demo
 
@@ -37,14 +39,28 @@ node demo/example.mjs
 ## Usage
 
 ```ts
-import { createPlayerSystemDemoManifest } from "@plasius/player-system-demo-viewer";
+import {
+  createPlayerSystemDemoManifest,
+  defaultPlayerSystemDemoValidationContract,
+} from "@plasius/player-system-demo-viewer";
 
 const manifest = createPlayerSystemDemoManifest([
   { scenarioId: "awakening", title: "Awakening" },
 ]);
 
 console.log(manifest.scenarios.length);
+console.log(defaultPlayerSystemDemoValidationContract.performanceBudget.launchMs);
 ```
+
+## Demo Validation Contract
+
+The inherited feature flag for this work is `isekai.player-system.runtime-nfr.enabled`.
+
+`defaultPlayerSystemDemoValidationContract` and `createPlayerSystemDemoValidationContract()` define:
+
+- launch, transition, and steady-state frame budgets for demo validation
+- warm-frame expectations before a scenario is considered stable
+- degraded/failure handling that stays bounded and testable
 
 ## Governance
 
