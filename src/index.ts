@@ -282,6 +282,19 @@ export function assessPlayerSystemDemoScenarioPortability(
     violations.push("samplePersona.classification");
   }
 
+  if (scenario.samplePersona) {
+    for (const sensitiveField of contract.sampleData.forbiddenSensitiveFields) {
+      if (
+        Object.prototype.hasOwnProperty.call(
+          scenario.samplePersona,
+          sensitiveField
+        )
+      ) {
+        violations.push(`samplePersona.${sensitiveField}`);
+      }
+    }
+  }
+
   if (
     scenario.composition &&
     scenario.composition.runtimeModules >

@@ -129,4 +129,20 @@ describe("@plasius/player-system-demo-viewer", () => {
       "composition.focusPanes",
     ]);
   });
+
+  it("rejects sensitive fields in samplePersona when portability contract forbids them", () => {
+    const rejected = assessPlayerSystemDemoScenarioPortability({
+      scenarioId: "awakening",
+      title: "Sensitive Sample Persona",
+      samplePersona: {
+        personaId: "persona-unsafe-001",
+        characterHandle: "Leaky",
+        classification: "synthetic",
+        email: "sensitive@example.com",
+      } as any,
+    });
+
+    expect(rejected.accepted).toBe(false);
+    expect(rejected.violations).toEqual(["samplePersona.email"]);
+  });
 });
