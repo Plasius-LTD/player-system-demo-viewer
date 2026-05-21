@@ -2,9 +2,14 @@ import {
   PLAYER_SYSTEM_PACKAGES_FEATURE_FLAG_ID,
   PLAYER_SYSTEM_DEMO_VIEWER_FEATURE_FLAG_ID,
   PLAYER_SYSTEM_RUNTIME_NFR_FEATURE_FLAG_ID,
+  PLAYER_SYSTEM_RUNTIME_PORTABILITY_FEATURE_FLAG_ID,
+  assessPlayerSystemDemoScenarioPortability,
   createPlayerSystemDemoManifest,
+  createPlayerSystemDemoPortabilityContract,
   createPlayerSystemDemoValidationContract,
+  defaultPlayerSystemDemoPortabilityContract,
   defaultPlayerSystemDemoValidationContract,
+  defaultPrivacySafeDemoScenarios,
   packageDescriptor,
 } from "../src/index.js";
 
@@ -27,6 +32,9 @@ describe("@plasius/player-system-demo-viewer", () => {
     expect(manifest.scenarios).toHaveLength(1);
     expect(manifest.validationContract?.featureFlagId).toBe(
       PLAYER_SYSTEM_RUNTIME_NFR_FEATURE_FLAG_ID
+    );
+    expect(manifest.portabilityContract?.featureFlagId).toBe(
+      PLAYER_SYSTEM_RUNTIME_PORTABILITY_FEATURE_FLAG_ID
     );
   });
 
@@ -56,6 +64,69 @@ describe("@plasius/player-system-demo-viewer", () => {
     expect(contract.failureExpectation.degradedMode).toBe("fallback-overlay");
     expect(contract.failureExpectation.boundedErrorCodes).toEqual([
       "PLAYER_SYSTEM_DEMO_TIMEOUT",
+    ]);
+  });
+
+  it("exports a portability contract and privacy-safe default scenarios", () => {
+    expect(defaultPlayerSystemDemoPortabilityContract.featureFlagId).toBe(
+      PLAYER_SYSTEM_RUNTIME_PORTABILITY_FEATURE_FLAG_ID
+    );
+    expect(
+      defaultPlayerSystemDemoPortabilityContract.sampleData.forbiddenSensitiveFields
+    ).toContain("refreshToken");
+    expect(defaultPrivacySafeDemoScenarios).toHaveLength(2);
+    expect(defaultPrivacySafeDemoScenarios[1]?.scenarioId).toBe(
+      "scaled-composition"
+    );
+  });
+
+  it("creates overridable demo portability contracts", () => {
+    const contract = createPlayerSystemDemoPortabilityContract({
+      compositionScale: {
+        maxWorldPanels: 4,
+      },
+      sampleData: {
+        forbiddenSensitiveFields: ["email", "accessToken"],
+      },
+    });
+
+    expect(contract.featureFlagId).toBe(
+      PLAYER_SYSTEM_RUNTIME_PORTABILITY_FEATURE_FLAG_ID
+    );
+    expect(contract.compositionScale.maxWorldPanels).toBe(4);
+    expect(contract.sampleData.forbiddenSensitiveFields).toEqual([
+      "email",
+      "accessToken",
+    ]);
+  });
+
+  it("assesses synthetic sample scenarios against the documented scale assumptions", () => {
+    const accepted = assessPlayerSystemDemoScenarioPortability(
+      defaultPrivacySafeDemoScenarios[1]!
+    );
+    const rejected = assessPlayerSystemDemoScenarioPortability({
+      scenarioId: "scaled-composition",
+      title: "Too Many Panels",
+      samplePersona: {
+        personaId: "persona-over-budget-001",
+        characterHandle: "OverBudget",
+        classification: "synthetic",
+      },
+      composition: {
+        runtimeModules: 4,
+        worldPanels: 7,
+        alertMarkers: 9,
+        focusPanes: 4,
+      },
+    });
+
+    expect(accepted.accepted).toBe(true);
+    expect(rejected.accepted).toBe(false);
+    expect(rejected.violations).toEqual([
+      "composition.runtimeModules",
+      "composition.worldPanels",
+      "composition.alertMarkers",
+      "composition.focusPanes",
     ]);
   });
 });

@@ -28,6 +28,7 @@ npm install @plasius/player-system-demo-viewer
 - points-ledger demos
 - launch, transition, and steady-state validation budgets for demo runs
 - degraded-path expectations for runtime failures surfaced through demos
+- privacy-safe sample personas and scaled composition evidence for runtime adoption
 
 ## Demo
 
@@ -41,15 +42,16 @@ node demo/example.mjs
 ```ts
 import {
   createPlayerSystemDemoManifest,
+  defaultPrivacySafeDemoScenarios,
+  defaultPlayerSystemDemoPortabilityContract,
   defaultPlayerSystemDemoValidationContract,
 } from "@plasius/player-system-demo-viewer";
 
-const manifest = createPlayerSystemDemoManifest([
-  { scenarioId: "awakening", title: "Awakening" },
-]);
+const manifest = createPlayerSystemDemoManifest(defaultPrivacySafeDemoScenarios);
 
 console.log(manifest.scenarios.length);
 console.log(defaultPlayerSystemDemoValidationContract.performanceBudget.launchMs);
+console.log(defaultPlayerSystemDemoPortabilityContract.sampleData.sampleClassification);
 ```
 
 ## Demo Validation Contract
@@ -61,6 +63,19 @@ The inherited feature flag for this work is `isekai.player-system.runtime-nfr.en
 - launch, transition, and steady-state frame budgets for demo validation
 - warm-frame expectations before a scenario is considered stable
 - degraded/failure handling that stays bounded and testable
+
+## Demo Portability Contract
+
+The inherited feature flag for this work is `isekai.player-system.runtime-portability.enabled`.
+
+`defaultPlayerSystemDemoPortabilityContract`,
+`createPlayerSystemDemoPortabilityContract()`,
+`defaultPrivacySafeDemoScenarios`, and
+`assessPlayerSystemDemoScenarioPortability()` define:
+
+- synthetic-only sample personas that avoid direct real-user-like identifiers
+- composition scenarios sized to the documented runtime and interface budgets
+- reusable validation metadata for scaled demo evidence
 
 ## Governance
 
