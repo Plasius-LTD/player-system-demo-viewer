@@ -1,7 +1,6 @@
 node_modules/
 dist/
 coverage/
-.npm-cache-packcheck/
 *.log
 # Private key material in cert directories (never commit)
 **/certs/**/*-key.pem
