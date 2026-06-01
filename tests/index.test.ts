@@ -145,4 +145,19 @@ describe("@plasius/player-system-demo-viewer", () => {
     expect(rejected.accepted).toBe(false);
     expect(rejected.violations).toEqual(["samplePersona.email"]);
   });
+
+  it("rejects non-synthetic sample persona classifications", () => {
+    const rejected = assessPlayerSystemDemoScenarioPortability({
+      scenarioId: "awakening",
+      title: "Non Synthetic Sample Persona",
+      samplePersona: {
+        personaId: "persona-unsafe-002",
+        characterHandle: "ImportedAccount",
+        classification: "customer",
+      } as any,
+    });
+
+    expect(rejected.accepted).toBe(false);
+    expect(rejected.violations).toEqual(["samplePersona.classification"]);
+  });
 });
