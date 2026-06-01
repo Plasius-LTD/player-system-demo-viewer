@@ -90,7 +90,7 @@ jobs:
             git tag "$NEW_VER"
             git push origin "$NEW_VER"
           fi
-          
+
           # Expose tag (vX.Y.Z) and version (X.Y.Z) for later steps
           VER_NO_V=${NEW_VER#v}
           echo "tag=$NEW_VER" >> "$GITHUB_OUTPUT"
@@ -103,13 +103,13 @@ jobs:
           else
             echo "flags=--access public" >> "$GITHUB_OUTPUT"
           fi
-          
+
       - name: Install deps (CI)
         run: npm ci
 
       - name: Test (coverage)
         run: npm run test -- --coverage
-        
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
