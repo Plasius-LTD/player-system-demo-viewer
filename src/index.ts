@@ -102,7 +102,7 @@ export const PLAYER_SYSTEM_RUNTIME_PORTABILITY_FEATURE_FLAG_ID =
 
 export const packageDescriptor: PackageDescriptor = Object.freeze({
   packageName: PLAYER_SYSTEM_DEMO_VIEWER_PACKAGE,
-  featureFlagId: PLAYER_SYSTEM_PACKAGES_FEATURE_FLAG_ID,
+  featureFlagId: PLAYER_SYSTEM_DEMO_VIEWER_FEATURE_FLAG_ID,
   envPrefix: PLAYER_SYSTEM_DEMO_VIEWER_ENV_PREFIX,
   summary: "Static validation launcher and scenario manifest surface for Player System demos.",
 });
