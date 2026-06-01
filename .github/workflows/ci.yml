@@ -30,6 +30,7 @@ jobs:
           github-token: ${{ secrets.RUNNER_SELECTOR_TOKEN || github.token }}
           script: |
             const selfHostedLabels = JSON.parse(process.env.SELF_HOSTED_RUNNER_LABELS)
+            const normalizedSelfHostedLabels = selfHostedLabels.map((label) => label.toLowerCase())
             const fallbackRunner = process.env.FALLBACK_RUNNER_LABEL
             let selectedRunnerJson = JSON.stringify(fallbackRunner)
 
@@ -56,11 +57,11 @@ jobs:
               )
 
               const hasMatchingIdleRunner = runners.some((runner) => {
-                const labels = new Set((runner.labels || []).map((label) => label.name))
+                const labels = new Set((runner.labels || []).map((label) => label.name.toLowerCase()))
                 return (
                   runner.status === "online" &&
                   runner.busy === false &&
-                  selfHostedLabels.every((label) => labels.has(label))
+                  normalizedSelfHostedLabels.every((label) => labels.has(label))
                 )
               })
 

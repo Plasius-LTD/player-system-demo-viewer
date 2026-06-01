@@ -19,11 +19,9 @@ on:
         type: string
 
 permissions:
-  actions: read
   contents: write
   id-token: write # for npm provenance (requires Node 18+ and npm >=9)
   attestations: write
-
 
 jobs:
   publish:
