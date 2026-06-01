@@ -38,6 +38,33 @@ describe("@plasius/player-system-demo-viewer", () => {
     );
   });
 
+  it("clones optional scenario persona and composition details into manifests", () => {
+    const scenario = {
+      scenarioId: "scaled-composition" as const,
+      title: "Scaled Composition",
+      samplePersona: {
+        personaId: "persona-scale-002",
+        characterHandle: "ScaleTester",
+        classification: "synthetic" as const,
+      },
+      composition: {
+        runtimeModules: 3,
+        worldPanels: 6,
+        alertMarkers: 8,
+        focusPanes: 3,
+      },
+    };
+
+    const manifest = createPlayerSystemDemoManifest([scenario]);
+
+    expect(manifest.scenarios[0]?.samplePersona).toEqual(scenario.samplePersona);
+    expect(manifest.scenarios[0]?.composition).toEqual(scenario.composition);
+    expect(manifest.scenarios[0]?.samplePersona).not.toBe(
+      scenario.samplePersona
+    );
+    expect(manifest.scenarios[0]?.composition).not.toBe(scenario.composition);
+  });
+
   it("exports default demo validation budgets and degraded-path expectations", () => {
     expect(defaultPlayerSystemDemoValidationContract.performanceBudget.launchMs).toBe(
       1_500
@@ -64,6 +91,20 @@ describe("@plasius/player-system-demo-viewer", () => {
     expect(contract.failureExpectation.degradedMode).toBe("fallback-overlay");
     expect(contract.failureExpectation.boundedErrorCodes).toEqual([
       "PLAYER_SYSTEM_DEMO_TIMEOUT",
+    ]);
+  });
+
+  it("keeps default bounded errors when only validation metadata changes", () => {
+    const contract = createPlayerSystemDemoValidationContract({
+      featureFlagId: "isekai.player-system.custom-validation.enabled",
+    });
+
+    expect(contract.featureFlagId).toBe(
+      "isekai.player-system.custom-validation.enabled"
+    );
+    expect(contract.failureExpectation.boundedErrorCodes).toEqual([
+      "PLAYER_SYSTEM_DEMO_TIMEOUT",
+      "PLAYER_SYSTEM_DEMO_DEGRADED",
     ]);
   });
 
@@ -98,6 +139,20 @@ describe("@plasius/player-system-demo-viewer", () => {
       "email",
       "accessToken",
     ]);
+  });
+
+  it("keeps default forbidden fields when only portability scale changes", () => {
+    const contract = createPlayerSystemDemoPortabilityContract({
+      compositionScale: {
+        maxFocusPanes: 2,
+      },
+    });
+
+    expect(contract.compositionScale.maxFocusPanes).toBe(2);
+    expect(contract.sampleData.forbiddenSensitiveFields).toEqual(
+      defaultPlayerSystemDemoPortabilityContract.sampleData
+        .forbiddenSensitiveFields
+    );
   });
 
   it("assesses synthetic sample scenarios against the documented scale assumptions", () => {
@@ -155,6 +210,16 @@ describe("@plasius/player-system-demo-viewer", () => {
         characterHandle: "ImportedAccount",
         classification: "customer",
       } as any,
+    });
+
+    expect(rejected.accepted).toBe(false);
+    expect(rejected.violations).toEqual(["samplePersona.classification"]);
+  });
+
+  it("rejects scenarios without sample persona metadata", () => {
+    const rejected = assessPlayerSystemDemoScenarioPortability({
+      scenarioId: "awakening",
+      title: "Missing Sample Persona",
     });
 
     expect(rejected.accepted).toBe(false);
