@@ -21,6 +21,24 @@ export interface PlayerSystemDemoManifest {
   readonly scenarios: readonly PlayerSystemDemoScenario[];
 }
 
+export {
+  createSystemDemoAppState,
+  findSystemDemoModule,
+  getSystemDemoModules,
+  resolveSystemDemoSelection,
+  systemDemoModules,
+} from "./systemDemo.js";
+export type {
+  SystemDemoAccent,
+  SystemDemoAppState,
+  SystemDemoContextEntry,
+  SystemDemoMetric,
+  SystemDemoModuleDefinition,
+  SystemDemoModuleId,
+  SystemDemoSelection,
+  SystemDemoVisualKind,
+} from "./systemDemo.js";
+
 export const PLAYER_SYSTEM_DEMO_VIEWER_PACKAGE = "@plasius/player-system-demo-viewer";
 export const PLAYER_SYSTEM_DEMO_VIEWER_ENV_PREFIX = "PLAYER_SYSTEM_DEMO_VIEWER";
 export const PLAYER_SYSTEM_DEMO_VIEWER_FEATURE_FLAG_ID =
@@ -30,7 +48,7 @@ export const packageDescriptor: PackageDescriptor = Object.freeze({
   packageName: PLAYER_SYSTEM_DEMO_VIEWER_PACKAGE,
   featureFlagId: PLAYER_SYSTEM_DEMO_VIEWER_FEATURE_FLAG_ID,
   envPrefix: PLAYER_SYSTEM_DEMO_VIEWER_ENV_PREFIX,
-  summary: "Static validation launcher and scenario manifest surface for Player System demos.",
+  summary: "3D System demo viewer and scenario manifest surface for Player System demos.",
 });
 
 export function createPlayerSystemDemoManifest(

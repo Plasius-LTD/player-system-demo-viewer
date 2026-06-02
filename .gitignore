@@ -1,6 +1,13 @@
 node_modules/
 dist/
+web-dist/
 coverage/
+.npm-cache/
+.npm-cache-packcheck/
+demo/video-frames/
+demo/*.mp4
+demo/*.mov
+demo/*.webm
 *.log
 # Private key material in cert directories (never commit)
 **/certs/**/*-key.pem

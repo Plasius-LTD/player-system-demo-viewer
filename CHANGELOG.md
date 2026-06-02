@@ -4,3 +4,49 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 - bootstrap `@plasius/player-system-demo-viewer` from the schema package baseline with package governance, docs, tests, and demo scaffolding
+- add a Vite and `@plasius/gpu-renderer` single-page 3D System demo viewer with Missions / Quests, MCC Core, and Spell Creation modules
+- add parameter-driven offline MP4 rendering with Chrome DevTools Protocol frame capture and FFmpeg encoding
+- add deterministic player look-around motion so world-space screens center only while looking down at them
+- add stronger physical world geometry and reduce panel drift so camera motion reads from background parallax instead of UI sliding
+- add background particle effects, ultra-quality scene lighting, and `gpu-shared`-style Chrome DevTools Protocol frame capture for FFmpeg recording
+- update the 3D demo backdrop to an outdoor grassland with a sun, horizon, hills, trees, and smaller lower-anchored System screens
+- render the visible System interface as rasterized textures on real WebGPU world-space planes instead of visible DOM perspective panels
+- add first-person camera movement with subtle step bob and remove the visible player figure from the scene
+- add scriptable `@plasius/gpu-interaction` actions for real 3D System screen buttons, including pointer hit testing and voice/script activation helpers
+- replace the remaining platform/grid scene props with a near-ground meadow foreground and flowers for a field-near-forest backdrop
+- replace the flat layered sky panels with a smoothed 360-degree procedural skybox so camera rotation no longer exposes sky edges
+- replace rectangular grass planes with a curved rolling terrain mesh that fades into the horizon behind the tree line
+- extend the forest into wider and deeper tree bands and stage System screen reveal so module and context panels appear after choices
+- increase forest and wildflower density for a fuller field-near-forest environment before screen-focused polish
+- enable the shared `gpu-shared` RT lighting path for ultra captures through `@plasius/gpu-renderer` and `@plasius/gpu-lighting`, adding per-pixel shadow/reflection plan metadata, shader ray-collision resolve, edge-aware denoise, and 720p CRF 14 export defaults
+- switch ultra presentation to ray-trace-owned colour resolve, using the offscreen world texture only for denoise edge guidance instead of compositing the geometry pass into the final frame
+- make traced material data authoritative for ray shading and reflection bounces so off-camera panels, terrain, and vegetation can colour reflections
+- add a GPU storage-buffer BVH over the generated triangle scene so primary rays trace the same mesh geometry used by the source scene instead of only procedural vegetation proxies
+- replace abstract crossed-tree silhouettes with tiered low-poly conifer meshes and terrain-relative material classification so ray-traced forest geometry reads as solid trees instead of flat blobs
+- add deterministic PNG still-frame capture to the offline recorder for screenshot review before MP4 encoding
+- expose renderer mode in the capture hook and make offline capture reject Canvas fallback output unless fallback QA is explicitly requested
+- settle offline captures across repeated same-time WebGPU frames plus a configurable delay so screenshots and video frames are read after presentation completes
+- restore stable direct WebGPU swapchain presentation for the real 3D scene and panel planes, keeping the experimental ray/denoise resolve behind an explicit presentation switch
+- make the frame-export hook await submitted WebGPU queue work and compositor frames before CDP captures the browser surface
+- report the active capture renderer/presentation mode and add `--require-ray` so path-traced captures fail if the ray resolve is not active
+- make ray-traced presentation the default offline capture path, require it automatically for ray captures, and strengthen traced mesh/tree/panel shadow visibility instead of falling back to geometry output
+- add material-aware path-tracing response so grass is high-roughness matte, leaves and bark trace as non-reflective occluders, panels remain emissive, and procedural forest volume no longer replaces the real tree mesh in primary visibility
+- keep 3D System panel planes visible in the ray pass even when raster alpha is sparse, and expand BVH traversal budget so dense forest mesh triangles are reachable in primary visibility
+- force physical System panel planes to stay visible in ray presentation independent of panel raster flags, and restore matte procedural forest primary visibility as a temporary guardrail while mesh-tree tracing is refined
+- log capture diagnostics for panel rasters and trace mesh counts so ray-frame blanking can be separated from material/intersection bugs
+- move capture diagnostics to the actual captured frame after seek/settle so panel counts reflect the rendered reveal stage instead of the initial ready state
+- prioritize physical System panel intersections before terrain/material tracing so ground hits cannot hide the screen planes in ray presentation
+- add `--ray-debug solid` and `--ray-debug hits` recorder modes plus GPU error diagnostics so blank ray frames can be separated between swapchain presentation and ray-hit shader failures
+- make the WebGPU System scene swapchain opaque so CSS canvas backgrounds cannot mask blank or transparent GPU presentation
+- label WebGPU shader modules and report shader compilation diagnostics in capture status when Chrome rejects a ray pipeline
+- add FFmpeg downscale-only screenshot/video output controls and capture canvas-size diagnostics for supersampled 4K-to-720p quality checks
+- remove procedural forest volumes from primary ray visibility so tree pixels resolve from the BVH mesh geometry, while retaining procedural forest occlusion for shadows
+- move the demo sun source to a higher afternoon position and make traced shadows use that same light vector
+- soften meadow-flower ray shadows separately from tree shadows and raise open-field ambient skylight
+- draw System panels as a final world-space overlay pass after ray resolve/denoise so panel text stays crisper without casting ray shadows or reflections
+- increase ray samples per pixel and add traced flower-stem ribbon geometry so meadow stems are visible in the path-traced resolve
+- add traced tapered grass-blade ribbons with coherent wind ripple motion so the ray tracer can resolve animated meadow detail
+- replace hybrid procedural tree shadow masks with BVH-only shadow visibility, tag traced geometry with explicit material IDs, and make denoise preserve fine ray detail
+- add adaptive ray-sample budgeting and diagnostics for high-resolution captures so 1440p-to-720p downscale renders stay on the ray-traced path without overloading the WebGPU frame
+- add a patchy middle-distance meadow layer with finer traced grass blades, sparse rough tufts, and smaller wildflowers so the field reads less uniform between the foreground and forest
+- render the visible sun as a directional sky-dome disc instead of nearby emissive scene geometry, keeping all sun lighting and BVH shadow rays on one constant direction
