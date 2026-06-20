@@ -1,9 +1,12 @@
-import { createPlayerSystemDemoManifest, packageDescriptor } from "../dist/index.js";
+import {
+  createPlayerSystemDemoManifest,
+  defaultPlayerSystemDemoScenarioCatalog,
+  packageDescriptor,
+} from "../dist/index.js";
 
-const manifest = createPlayerSystemDemoManifest([
-  { scenarioId: "awakening", title: "Awakening" },
-  { scenarioId: "points-ledgers", title: "Points Ledgers" },
-]);
+const manifest = createPlayerSystemDemoManifest(
+  defaultPlayerSystemDemoScenarioCatalog.slice(0, 6)
+);
 
 console.log(packageDescriptor);
 console.log(manifest);

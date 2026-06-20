@@ -23,6 +23,8 @@ npm install @plasius/player-system-demo-viewer
 `@plasius/player-system-demo-viewer` owns the reusable manifest and scenario surface for:
 
 - awakening demos
+- mission-guidance demos
+- focused-pane composition demos
 - combat-safe reduction demos
 - institution-routing demos
 - points-ledger demos
@@ -42,17 +44,31 @@ node demo/example.mjs
 ```ts
 import {
   createPlayerSystemDemoManifest,
-  defaultPrivacySafeDemoScenarios,
+  defaultPlayerSystemDemoScenarioCatalog,
   defaultPlayerSystemDemoPortabilityContract,
   defaultPlayerSystemDemoValidationContract,
 } from "@plasius/player-system-demo-viewer";
 
-const manifest = createPlayerSystemDemoManifest(defaultPrivacySafeDemoScenarios);
+const manifest = createPlayerSystemDemoManifest(defaultPlayerSystemDemoScenarioCatalog);
 
 console.log(manifest.scenarios.length);
 console.log(defaultPlayerSystemDemoValidationContract.performanceBudget.launchMs);
 console.log(defaultPlayerSystemDemoPortabilityContract.sampleData.sampleClassification);
 ```
+
+## Scenario Catalog
+
+The default static catalog covers the story `#419` validation surface without becoming a live host runtime:
+
+| Scenario | Entry mode | Validation focus |
+| --- | --- | --- |
+| `awakening` | ambient | first-contact coaching and early mission prompts |
+| `mission-guidance` | ambient | adaptive objective routing and path-confirmation |
+| `focused-panes` | focused | status, mission, tutorial, and store pane coexistence |
+| `combat-safe` | combat-safe | reduced tutorial overlays and alert-priority behavior |
+| `institution-routing` | focused | school, barracks, academy, and apprenticeship handoff previews |
+| `points-ledgers` | focused | income, commitments, and spend-preflight ledger behavior |
+| `scaled-composition` | focused | maximum documented module, panel, and alert density |
 
 ## Demo Validation Contract
 
@@ -70,10 +86,12 @@ The inherited feature flag for this work is `isekai.player-system.runtime-portab
 
 `defaultPlayerSystemDemoPortabilityContract`,
 `createPlayerSystemDemoPortabilityContract()`,
+`defaultPlayerSystemDemoScenarioCatalog`,
 `defaultPrivacySafeDemoScenarios`, and
 `assessPlayerSystemDemoScenarioPortability()` define:
 
 - synthetic-only sample personas that avoid direct real-user-like identifiers
+- explicit scenario coverage for awakening, mission guidance, focused panes, tutorial reduction, institution routing, and points-ledger validation
 - composition scenarios sized to the documented runtime and interface budgets
 - reusable validation metadata for scaled demo evidence
 

@@ -7,6 +7,7 @@ import {
   createPlayerSystemDemoManifest,
   createPlayerSystemDemoPortabilityContract,
   createPlayerSystemDemoValidationContract,
+  defaultPlayerSystemDemoScenarioCatalog,
   defaultPlayerSystemDemoPortabilityContract,
   defaultPlayerSystemDemoValidationContract,
   defaultPrivacySafeDemoScenarios,
@@ -42,6 +43,8 @@ describe("@plasius/player-system-demo-viewer", () => {
     const scenario = {
       scenarioId: "scaled-composition" as const,
       title: "Scaled Composition",
+      validationGoals: ["composition-scale"] as const,
+      previewStates: ["overlay coexistence"] as const,
       samplePersona: {
         personaId: "persona-scale-002",
         characterHandle: "ScaleTester",
@@ -59,10 +62,22 @@ describe("@plasius/player-system-demo-viewer", () => {
 
     expect(manifest.scenarios[0]?.samplePersona).toEqual(scenario.samplePersona);
     expect(manifest.scenarios[0]?.composition).toEqual(scenario.composition);
+    expect(manifest.scenarios[0]?.validationGoals).toEqual(
+      scenario.validationGoals
+    );
+    expect(manifest.scenarios[0]?.previewStates).toEqual(
+      scenario.previewStates
+    );
     expect(manifest.scenarios[0]?.samplePersona).not.toBe(
       scenario.samplePersona
     );
     expect(manifest.scenarios[0]?.composition).not.toBe(scenario.composition);
+    expect(manifest.scenarios[0]?.validationGoals).not.toBe(
+      scenario.validationGoals
+    );
+    expect(manifest.scenarios[0]?.previewStates).not.toBe(
+      scenario.previewStates
+    );
   });
 
   it("exports default demo validation budgets and degraded-path expectations", () => {
@@ -115,10 +130,51 @@ describe("@plasius/player-system-demo-viewer", () => {
     expect(
       defaultPlayerSystemDemoPortabilityContract.sampleData.forbiddenSensitiveFields
     ).toContain("refreshToken");
-    expect(defaultPrivacySafeDemoScenarios).toHaveLength(2);
-    expect(defaultPrivacySafeDemoScenarios[1]?.scenarioId).toBe(
+    expect(defaultPrivacySafeDemoScenarios).toBe(
+      defaultPlayerSystemDemoScenarioCatalog
+    );
+    expect(defaultPrivacySafeDemoScenarios).toHaveLength(7);
+    expect(defaultPrivacySafeDemoScenarios.at(-1)?.scenarioId).toBe(
       "scaled-composition"
     );
+  });
+
+  it("exports the required demo-scenario coverage for story #419", () => {
+    expect(defaultPlayerSystemDemoScenarioCatalog.map((scenario) => scenario.scenarioId))
+      .toEqual([
+        "awakening",
+        "mission-guidance",
+        "focused-panes",
+        "combat-safe",
+        "institution-routing",
+        "points-ledgers",
+        "scaled-composition",
+      ]);
+
+    for (const scenario of defaultPlayerSystemDemoScenarioCatalog) {
+      expect(scenario.validationGoals?.length).toBeGreaterThan(0);
+      expect(scenario.previewStates?.length).toBeGreaterThan(0);
+      expect(scenario.samplePersona?.classification).toBe("synthetic");
+    }
+
+    const institutionScenario = defaultPlayerSystemDemoScenarioCatalog.find(
+      (scenario) => scenario.scenarioId === "institution-routing"
+    );
+    const combatSafeScenario = defaultPlayerSystemDemoScenarioCatalog.find(
+      (scenario) => scenario.scenarioId === "combat-safe"
+    );
+    const pointsLedgerScenario = defaultPlayerSystemDemoScenarioCatalog.find(
+      (scenario) => scenario.scenarioId === "points-ledgers"
+    );
+
+    expect(institutionScenario?.previewStates).toEqual([
+      "school recommendation",
+      "barracks unlock",
+      "academy prerequisite gate",
+      "apprenticeship handoff",
+    ]);
+    expect(combatSafeScenario?.entryMode).toBe("combat-safe");
+    expect(pointsLedgerScenario?.previewStates).toContain("spend preflight");
   });
 
   it("creates overridable demo portability contracts", () => {
@@ -157,7 +213,7 @@ describe("@plasius/player-system-demo-viewer", () => {
 
   it("assesses synthetic sample scenarios against the documented scale assumptions", () => {
     const accepted = assessPlayerSystemDemoScenarioPortability(
-      defaultPrivacySafeDemoScenarios[1]!
+      defaultPlayerSystemDemoScenarioCatalog.at(-1)!
     );
     const rejected = assessPlayerSystemDemoScenarioPortability({
       scenarioId: "scaled-composition",
