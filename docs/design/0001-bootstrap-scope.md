@@ -8,6 +8,8 @@ Provide a package-standard bootstrap for Player System demo validation.
 
 - package descriptor and feature-flag metadata
 - scenario manifest contracts
+- explicit static scenario catalog for awakening, mission guidance, focused panes,
+  tutorial reduction, institution routing, and points-ledger validation
 - demo manifest helper
 - privacy-safe sample scenario catalog and portability validation helper
 - demo and test scaffolding
@@ -24,3 +26,5 @@ Provide a package-standard bootstrap for Player System demo validation.
 - Scaled scenarios should exercise the documented runtime and interface budgets.
 - The package should provide validation evidence without embedding host-specific
   implementation logic.
+- Institution and points-ledger scenarios should stay as handoff previews rather
+  than becoming authoritative world or economy simulators.
