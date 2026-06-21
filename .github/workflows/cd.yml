@@ -17,9 +17,6 @@ on:
         description: "Pre-release id (e.g. beta, rc). Leave blank for stable"
         required: false
         type: string
-  push:
-    branches:
-      - main
 
 permissions:
   actions: read
@@ -33,179 +30,23 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  prepare-release-pr:
-    if: github.event_name == 'workflow_dispatch' && inputs.bump != 'none'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+  prepare_release:
+    uses: Plasius-LTD/plasius-ltd-site/.github/workflows/release-prepare.yml@main
+    with:
+      bump: ${{ inputs.bump }}
+      preid: ${{ inputs.preid }}
+    secrets: inherit
 
-      - name: Use Node.js 24
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: ".nvmrc"
-          cache: npm
-
-      - name: Prepare protected-branch-safe release PR
-        id: prep
-        env:
-          BUMP: ${{ inputs.bump }}
-          PREID: ${{ inputs.preid }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin main --tags
-
-          CURRENT_VERSION=$(node -p "require('./package.json').version")
-          PACKAGE_NAME=$(node -p "require('./package.json').name")
-          PUBLISHED_VERSION=""
-          if npm view "${PACKAGE_NAME}" version >/dev/null 2>&1; then
-            PUBLISHED_VERSION=$(npm view "${PACKAGE_NAME}" version)
-          fi
-
-          HIGHEST_KNOWN_VERSION=$(
-            {
-              printf '%s\n' "${CURRENT_VERSION}"
-              if [ -n "${PUBLISHED_VERSION}" ]; then
-                printf '%s\n' "${PUBLISHED_VERSION}"
-              fi
-              git tag --list 'v*'
-            } | node scripts/resolve-release-base-version.mjs
-          )
-
-          case "${BUMP:-patch}" in
-            major|minor|patch)
-              if [ "${HIGHEST_KNOWN_VERSION}" != "${CURRENT_VERSION}" ]; then
-                npm version "${HIGHEST_KNOWN_VERSION}" --allow-same-version --no-git-tag-version >/dev/null
-              fi
-
-              if [ -n "${PREID:-}" ]; then
-                case "${BUMP}" in
-                  major) npm version premajor --preid "${PREID}" --no-git-tag-version >/dev/null ;;
-                  minor) npm version preminor --preid "${PREID}" --no-git-tag-version >/dev/null ;;
-                  patch) npm version prepatch --preid "${PREID}" --no-git-tag-version >/dev/null ;;
-                esac
-              else
-                npm version "${BUMP}" --no-git-tag-version >/dev/null
-              fi
-              ;;
-            none)
-              if [ "${HIGHEST_KNOWN_VERSION}" != "${CURRENT_VERSION}" ]; then
-                echo "Current version ${CURRENT_VERSION} trails published/tagged state ${HIGHEST_KNOWN_VERSION}; choose a bump to prepare the next release." >&2
-                exit 1
-              fi
-
-              echo "Leaving package.json version unchanged at ${CURRENT_VERSION}."
-              ;;
-            *)
-              echo "Unknown bump type: ${BUMP}" >&2
-              exit 1
-              ;;
-          esac
-
-          NEXT_VERSION=$(node -p "require('./package.json').version")
-          TAG="v${NEXT_VERSION}"
-          BRANCH="release/${TAG}"
-
-          if git ls-remote --exit-code --heads origin "${BRANCH}" >/dev/null 2>&1; then
-            echo "Release branch ${BRANCH} already exists." >&2
-            exit 1
-          fi
-
-          if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
-            echo "Release tag ${TAG} already exists on origin." >&2
-            exit 1
-          fi
-
-          if npm view "${PACKAGE_NAME}@${NEXT_VERSION}" version >/dev/null 2>&1; then
-            echo "Package ${PACKAGE_NAME}@${NEXT_VERSION} is already published." >&2
-            exit 1
-          fi
-
-          FILE="CHANGELOG.md"
-          if [ -f "${FILE}" ]; then
-            node scripts/promote-unreleased-changelog.mjs \
-              "${FILE}" \
-              "${NEXT_VERSION}" \
-              "${GITHUB_REPOSITORY}"
-          fi
-
-          git checkout -b "${BRANCH}"
-          git add package.json
-          if [ -f package-lock.json ]; then
-            git add package-lock.json
-          fi
-          if [ -f "${FILE}" ]; then
-            git add "${FILE}"
-          fi
-
-          if git diff --cached --quiet; then
-            echo "No release metadata changes were produced; refusing to open an empty release PR." >&2
-            exit 1
-          fi
-
-          git commit -m "chore: prepare release ${TAG}"
-          git push origin "${BRANCH}"
-
-          PR_BODY=$(cat <<EOF
-          ## Summary
-          - prepare ${PACKAGE_NAME} ${TAG} for protected-branch-safe release
-          - promote the current Unreleased changelog entries into ${TAG}
-          - unblock npm publication by merging release metadata through a pull request instead of a direct main push
-
-          ## Follow-up
-          - merge this PR into main
-          - allow the push-triggered CD workflow to tag, publish to npm, and publish the GitHub release from versioned main
-          EOF
-          )
-
-          PR_URL="$(gh pr list --repo "${GITHUB_REPOSITORY}" --head "${BRANCH}" --json url --jq '.[0].url')"
-          if [ -z "${PR_URL}" ] || [ "${PR_URL}" = "null" ]; then
-            if ! PR_URL=$(gh pr create \
-              --repo "${GITHUB_REPOSITORY}" \
-              --base main \
-              --head "${BRANCH}" \
-              --title "chore: prepare release ${TAG}" \
-              --body "${PR_BODY}" 2>pr-create-error.log); then
-              if grep -q "GitHub Actions is not permitted to create or approve pull requests" pr-create-error.log; then
-                PR_URL="https://github.com/${GITHUB_REPOSITORY}/pull/new/${BRANCH}"
-                echo "::warning::GitHub Actions cannot create pull requests in this repository. Open ${PR_URL} manually."
-              else
-                cat pr-create-error.log >&2
-                exit 1
-              fi
-            fi
-          fi
-
-          echo "branch=${BRANCH}" >> "${GITHUB_OUTPUT}"
-          echo "base_version=${HIGHEST_KNOWN_VERSION}" >> "${GITHUB_OUTPUT}"
-          echo "tag=${TAG}" >> "${GITHUB_OUTPUT}"
-          echo "version=${NEXT_VERSION}" >> "${GITHUB_OUTPUT}"
-          echo "pr_url=${PR_URL}" >> "${GITHUB_OUTPUT}"
-
-      - name: Summarize release PR
-        run: |
-          {
-            echo "Prepared protected-branch-safe release PR:"
-            echo "- reconciled occupied version: ${{ steps.prep.outputs.base_version }}"
-            echo "- branch: ${{ steps.prep.outputs.branch }}"
-            echo "- tag: ${{ steps.prep.outputs.tag }}"
-            echo "- PR: ${{ steps.prep.outputs.pr_url }}"
-          } >> "$GITHUB_STEP_SUMMARY"
 
   publish:
-    if: "${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.bump == 'none') }}"
+    needs: prepare_release
     runs-on: ubuntu-latest
     environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
 
       - name: Use Node.js 24
@@ -215,80 +56,29 @@ jobs:
           cache: npm
           registry-url: "https://registry.npmjs.org"
 
-      - name: Determine publish metadata
+      - name: Use prepared release metadata
         id: pkg
         run: |
           set -euo pipefail
 
-          VERSION=$(node -p "require('./package.json').version")
-          TAG="v${VERSION}"
-          NAME=$(node -p "require('./package.json').name")
-          git fetch origin --tags
-
-          PUBLISHED=""
-          if npm view "${NAME}" version >/dev/null 2>&1; then
-            PUBLISHED=$(npm view "${NAME}" version)
-          fi
-
-          HIGHEST_KNOWN_VERSION=$(
-            {
-              printf '%s\n' "${VERSION}"
-              if [ -n "${PUBLISHED}" ]; then
-                printf '%s\n' "${PUBLISHED}"
-              fi
-              git tag --list 'v*'
-            } | node scripts/resolve-release-base-version.mjs
-          )
-
-          CURRENT_IS_STALE=$(CURRENT_VERSION="${VERSION}" HIGHEST_KNOWN_VERSION="${HIGHEST_KNOWN_VERSION}" node --input-type=module <<'EOF'
-          import { compareSemver } from "./scripts/resolve-release-base-version.mjs";
-
-          const current = process.env.CURRENT_VERSION;
-          const highestKnown = process.env.HIGHEST_KNOWN_VERSION;
-
-          process.stdout.write(compareSemver(current, highestKnown) < 0 ? "true" : "false");
-          EOF
-          )
-
-          HAS_CHANGELOG_SECTION=false
-          if [ -f CHANGELOG.md ] && grep -q "^## \\[${VERSION}\\]" CHANGELOG.md; then
-            HAS_CHANGELOG_SECTION=true
-          fi
-
-          SHOULD_PUBLISH=false
-          FLAGS=""
+          PUBLISHED="${{ needs.prepare_release.outputs.published }}"
+          SHOULD_PUBLISH=true
           SKIP_REASON=""
-          if [ "${CURRENT_IS_STALE}" = "true" ]; then
-            SKIP_REASON="Package version ${VERSION} trails published/tagged state ${HIGHEST_KNOWN_VERSION}; merge a release-prep PR before publishing from main."
-          elif [ "${HAS_CHANGELOG_SECTION}" != "true" ]; then
-            if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
-              echo "CHANGELOG.md must contain a ${VERSION} section before rerunning publish from main." >&2
-              exit 1
-            fi
-
-            SKIP_REASON="CHANGELOG.md does not yet contain a ${VERSION} section; main is not carrying a release-prepared commit."
-          elif [ -z "${PUBLISHED}" ] || [ "${PUBLISHED}" != "${VERSION}" ]; then
-            SHOULD_PUBLISH=true
-            if [ -z "${PUBLISHED}" ]; then
-              FLAGS="--access public"
-            fi
-          else
-            SKIP_REASON="Package version ${VERSION} is already published; nothing to release."
+          if [ "${PUBLISHED}" = "true" ]; then
+            SHOULD_PUBLISH=false
+            SKIP_REASON="Package version ${{ needs.prepare_release.outputs.version }} is already published; nothing to release."
           fi
 
-          if [ "${SHOULD_PUBLISH}" = "true" ] && [ "${HAS_CHANGELOG_SECTION}" != "true" ]; then
-            echo "CHANGELOG.md must contain a ${VERSION} section before publish." >&2
-            exit 1
-          fi
-
-          echo "name=${NAME}" >> "${GITHUB_OUTPUT}"
-          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
-          echo "tag=${TAG}" >> "${GITHUB_OUTPUT}"
-          echo "flags=${FLAGS}" >> "${GITHUB_OUTPUT}"
-          echo "highest_known_version=${HIGHEST_KNOWN_VERSION}" >> "${GITHUB_OUTPUT}"
-          echo "skip_reason=${SKIP_REASON}" >> "${GITHUB_OUTPUT}"
-          echo "should_publish=${SHOULD_PUBLISH}" >> "${GITHUB_OUTPUT}"
-
+          {
+            echo "mode=publish"
+            echo "name=${{ needs.prepare_release.outputs.name }}"
+            echo "tag=${{ needs.prepare_release.outputs.tag }}"
+            echo "version=${{ needs.prepare_release.outputs.version }}"
+            echo "flags=${{ needs.prepare_release.outputs.flags }}"
+            echo "published=${PUBLISHED}"
+            echo "should_publish=${SHOULD_PUBLISH}"
+            echo "skip_reason=${SKIP_REASON}"
+          } >> "$GITHUB_OUTPUT"
       - name: Skip when main does not carry a new package version
         if: steps.pkg.outputs.should_publish != 'true'
         run: echo "${{ steps.pkg.outputs.skip_reason }}"
