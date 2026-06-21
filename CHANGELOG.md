@@ -8,3 +8,4 @@ All notable changes to this project will be documented in this file.
 - align bootstrap rollout documentation and exports on parent feature flag `isekai.player-system.packages.enabled`
 - add privacy-safe sample persona and scaled composition contracts under `isekai.player-system.runtime-portability.enabled`
 - add a static scenario catalog for awakening, mission guidance, focused panes, combat-safe tutorial reduction, institution routing, and points-ledger validation
+- switch npm publication to a protected-main-safe release-prep PR plus publish-from-main workflow

@@ -153,6 +153,10 @@ We label approachable tasks as **good first issue** and **help wanted**.
 - We follow **SemVer**.
 - Breaking changes require a major bump and migration notes.
 - Keep `CHANGELOG.md` clear about user-facing changes.
+- Protected `main` releases are two-step:
+  1. run `.github/workflows/cd.yml` with `bump=patch|minor|major` to create a release-prep PR
+  2. merge that PR to `main` so the push-triggered publish job tags, releases, and publishes from versioned `main`
+- Use `bump=none` only to rerun publish from an already-versioned `main` commit.
 
 ---
 
