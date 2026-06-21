@@ -103,3 +103,9 @@ The inherited feature flag for this work is `isekai.player-system.runtime-portab
 - Parent feature flag: `isekai.player-system.packages.enabled`
 - Capability: not required for package bootstrap; demo-launcher adoption remains feature-flag led
 - Rollback: disable `isekai.player-system.packages.enabled` to halt package-family adoption without changing package code
+
+## Release Workflow
+
+- Run `.github/workflows/cd.yml` with `bump=patch|minor|major` to prepare a release PR from protected `main`.
+- Merge the generated release PR into `main` so the push-triggered publish job can tag, release, and publish from the reviewed versioned commit.
+- Use `bump=none` only to rerun publish from an already versioned `main` commit.
