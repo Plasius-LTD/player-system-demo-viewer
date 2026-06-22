@@ -1,6 +1,6 @@
 {
   "name": "@plasius/player-system-demo-viewer",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Static validation launcher and scenario manifest surface for Player System demos",
   "type": "module",
   "sideEffects": false,
