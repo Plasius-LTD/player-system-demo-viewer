@@ -109,3 +109,13 @@ The inherited feature flag for this work is `isekai.player-system.runtime-portab
 - Run `.github/workflows/cd.yml` with `bump=patch|minor|major` to prepare a release PR from protected `main`.
 - Merge the generated release PR into `main` so the push-triggered publish job can tag, release, and publish from the reviewed versioned commit.
 - Use `bump=none` only to rerun publish from an already versioned `main` commit.
+
+<!-- BEGIN PLASIUS RELEASE INTEGRITY -->
+## Release integrity
+
+CI keeps the administrative contributor registry outside Git and npm package
+artifacts using exact, case-normalised path checks. CI runs on approved
+self-hosted runners. Release preparation and npm publication use GitHub-hosted
+runners with Node.js 24.18.0 LTS. CD remains disabled until the npm trusted
+publisher binding is verified and the legacy token fallback is removed.
+<!-- END PLASIUS RELEASE INTEGRITY -->
