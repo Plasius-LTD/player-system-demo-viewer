@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
   - (placeholder)
 
 - **Security**
+  - Pinned patched transitive npm dependencies to clear the current audit baseline.
   - Added fail-closed source and npm-package admission for the administrative contributor registry and pinned the CI/CD runtime to Node.js 24.18.0 LTS.
   - Pinned patched transitive build-tool dependencies for the current npm audit advisories.
   - (placeholder)
