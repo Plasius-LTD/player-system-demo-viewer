@@ -16,6 +16,20 @@ All notable changes to this project will be documented in this file.
 - **Security**
   - (placeholder)
 
+## [0.1.7] - 2026-09-13
+
+- **Added**
+  - (placeholder)
+
+- **Changed**
+  - (placeholder)
+
+- **Fixed**
+  - (placeholder)
+
+- **Security**
+  - (placeholder)
+
 ## [0.1.6] - 2026-09-13
 
 ### Changed
@@ -81,3 +95,4 @@ All notable changes to this project will be documented in this file.
 [0.1.4]: https://github.com/Plasius-LTD/player-system-demo-viewer/releases/tag/v0.1.4
 [0.1.5]: https://github.com/Plasius-LTD/player-system-demo-viewer/releases/tag/v0.1.5
 [0.1.6]: https://github.com/Plasius-LTD/player-system-demo-viewer/releases/tag/v0.1.6
+[0.1.7]: https://github.com/Plasius-LTD/player-system-demo-viewer/releases/tag/v0.1.7
