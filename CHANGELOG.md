@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- **Added**
+  - (placeholder)
+
+- **Changed**
+  - (placeholder)
+
+- **Fixed**
+  - (placeholder)
+
+- **Security**
+  - (placeholder)
+
+## [0.1.13] - 2026-10-23
+
 - Restore trusted push-only CI on the quarantined self-hosted Linux/X64 group; deny PR/manual runner entry points, bound validation jobs, retain strict install/coverage/package gates, and cover administrative artifact admission using metadata-only tests. Hosted OIDC production publication remains unchanged.
 
 - **Added**
@@ -183,3 +197,4 @@ All notable changes to this project will be documented in this file.
 [0.1.10]: https://github.com/Plasius-LTD/player-system-demo-viewer/releases/tag/v0.1.10
 [0.1.11]: https://github.com/Plasius-LTD/player-system-demo-viewer/releases/tag/v0.1.11
 [0.1.12]: https://github.com/Plasius-LTD/player-system-demo-viewer/releases/tag/v0.1.12
+[0.1.13]: https://github.com/Plasius-LTD/player-system-demo-viewer/releases/tag/v0.1.13
