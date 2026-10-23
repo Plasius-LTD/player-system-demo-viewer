@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- Restore trusted push-only CI on the quarantined self-hosted Linux/X64 group; deny PR/manual runner entry points, bound validation jobs, retain strict install/coverage/package gates, and cover administrative artifact admission using metadata-only tests. Hosted OIDC production publication remains unchanged.
+
 - **Added**
   - (placeholder)
 
