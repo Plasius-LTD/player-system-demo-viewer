@@ -15,8 +15,9 @@ Publication is phase-isolated: dependency installation, package validation, SBOM
 Publish only from the GitHub-hosted `production` job using npm trusted
 publishing. Prove the prepared SHA is still the exact remote `main` head and
 that push-triggered `ci.yml` succeeded for it. Require Node 24 and npm 11.5.1 or
-newer, request provenance, and prohibit npm write-token fallbacks. Reviewed CI
-uses explicit GitHub-hosted runners; fork PR code is denied.
+newer, request provenance, and prohibit npm write-token fallbacks. CI now uses
+the trusted push-only self-hosted boundary in ADR 0004, which supersedes the
+original hosted CI decision. Fork PR code is denied.
 
 ## Consequences
 

@@ -3,4 +3,5 @@
 - [ADR-0001: Player System Demo Viewer Package Boundary](./adr-0001-player-system-demo-viewer.md)
 - [ADR-0002: Protected-Main Release Publishing](./adr-0002-protected-main-release-publishing.md)
 - [ADR-0003: Hosted OIDC Package Publication](./adr-0003-hosted-oidc-package-publication.md)
+- [ADR-0004: Trusted Self-Hosted CI](./adr-0004-trusted-self-hosted-ci.md)
 - [ADR Template](./adr-template.md)
