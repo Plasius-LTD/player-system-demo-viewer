@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- **Added**
+  - (placeholder)
+
+- **Changed**
+  - (placeholder)
+
+- **Fixed**
+  - (placeholder)
+
+- **Security**
+  - (placeholder)
+
+## [0.1.15] - 2026-10-29
+
 - Verify standalone registry-only dependency installation and guard the complete lock graph against sibling-checkout links; document the static package's GPU-independent boundary.
 
 - **Added**
@@ -217,3 +231,4 @@ All notable changes to this project will be documented in this file.
 [0.1.12]: https://github.com/Plasius-LTD/player-system-demo-viewer/releases/tag/v0.1.12
 [0.1.13]: https://github.com/Plasius-LTD/player-system-demo-viewer/releases/tag/v0.1.13
 [0.1.14]: https://github.com/Plasius-LTD/player-system-demo-viewer/releases/tag/v0.1.14
+[0.1.15]: https://github.com/Plasius-LTD/player-system-demo-viewer/releases/tag/v0.1.15
