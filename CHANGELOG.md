@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- Verify standalone registry-only dependency installation and guard the complete lock graph against sibling-checkout links; document the static package's GPU-independent boundary.
+
 - **Added**
   - (placeholder)
 
