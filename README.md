@@ -18,6 +18,15 @@ Apache-2.0. ESM + CJS builds. TypeScript types included.
 npm install @plasius/player-system-demo-viewer
 ```
 
+For development, clone this repository on its own, select the Node.js version
+in `.nvmrc`, then run `npm ci`, `npm test`, `npm run typecheck`, `npm run lint`,
+`npm run build`, and `npm run pack:check`. No sibling Plasius checkout is needed.
+The static manifest package does not import a GPU renderer, lighting engine, or
+interaction adapter. Its development tools resolve from the npm registry with
+locked tarball integrity; do not add `file:`, linked workspace, or sibling-path
+dependencies. If a future integration needs a GPU package, use a compatible
+published release and keep rendering in the host adapter.
+
 ## Scope
 
 `@plasius/player-system-demo-viewer` owns the reusable manifest and scenario surface for:
