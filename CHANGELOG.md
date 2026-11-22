@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- **Added**
+  - (placeholder)
+
+- **Changed**
+  - (placeholder)
+
+- **Fixed**
+  - (placeholder)
+
+- **Security**
+  - (placeholder)
+
+## [0.1.16] - 2026-11-22
+
 - Refresh supported npm dependency and security tooling baselines; preserve runtime API contracts (weekly maintenance, 2026-11-22).
 
 - **Added**
@@ -234,3 +248,4 @@ All notable changes to this project will be documented in this file.
 [0.1.13]: https://github.com/Plasius-LTD/player-system-demo-viewer/releases/tag/v0.1.13
 [0.1.14]: https://github.com/Plasius-LTD/player-system-demo-viewer/releases/tag/v0.1.14
 [0.1.15]: https://github.com/Plasius-LTD/player-system-demo-viewer/releases/tag/v0.1.15
+[0.1.16]: https://github.com/Plasius-LTD/player-system-demo-viewer/releases/tag/v0.1.16
